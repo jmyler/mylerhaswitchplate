@@ -1,0 +1,28 @@
+##############################################################################
+# Automations to set colors on HASP Page 6
+
+automation:
+  - alias: hasp_kitchen_p6_ColorConfig
+    trigger:
+    - platform: state
+      entity_id: 'binary_sensor.kitchen_connected'
+      to: 'on'
+    - platform: homeassistant
+      event: start
+    - platform: state
+      entity_id: input_number.hasp_kitchen_selectedbackgroundcolor
+    - platform: state
+      entity_id: input_number.hasp_kitchen_unselectedbackgroundcolor
+    - platform: state
+      entity_id: input_number.hasp_kitchen_selectedforegroundcolor
+    - platform: state
+      entity_id: input_number.hasp_kitchen_unselectedforegroundcolor
+    action:
+    - service: mqtt.publish
+      data:
+        topic: 'hasp/kitchen/command/json'
+        payload_template: >-
+          [{%- for i in range(4,12) -%}"p[6].b[{{i}}].pco={{ states.input_number.hasp_kitchen_selectedforegroundcolor.state|int }}",{%- endfor -%}
+          {%- for i in range(4,12) -%}"p[6].b[{{i}}].bco={{ states.input_number.hasp_kitchen_selectedbackgroundcolor.state|int }}",{%- endfor -%}
+          {%- for i in range(4,12) -%}"p[6].b[{{i}}].pco2={{ states.input_number.hasp_kitchen_unselectedforegroundcolor.state|int }}",{%- endfor -%}
+          {%- for i in range(4,12) -%}"p[6].b[{{i}}].bco2={{ states.input_number.hasp_kitchen_unselectedbackgroundcolor.state|int }}",{%- endfor -%}]

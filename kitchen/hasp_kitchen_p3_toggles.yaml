@@ -1,0 +1,245 @@
+##############################################################################
+# Automations for handling toggle state buttons on page 3
+automation:
+  # Set font and text for toggle buttons on device connection
+  - alias: hasp_kitchen_p3_ToggleInit
+    trigger:
+    - platform: state
+      entity_id: 'binary_sensor.kitchen_connected'
+      to: 'on'
+    - platform: homeassistant
+      event: start
+    action:
+    - service: mqtt.publish
+      data:
+        topic: 'hasp/kitchen/command/p[3].b[4].font'
+        payload: '2'
+    - service: mqtt.publish
+      data:
+        topic: 'hasp/kitchen/command/p[3].b[4].txt'
+        payload: '"Fan High"'
+    - service: mqtt.publish
+      data:
+        topic: 'hasp/kitchen/command/p[3].b[5].font'
+        payload: '2'
+    - service: mqtt.publish
+      data:
+        topic: 'hasp/kitchen/command/p[3].b[5].txt'
+        payload: '"Fan Med"'
+    - service: mqtt.publish
+      data:
+        topic: 'hasp/kitchen/command/p[3].b[6].font'
+        payload: '2'
+    - service: mqtt.publish
+      data:
+        topic: 'hasp/kitchen/command/p[3].b[6].txt'
+        payload: '"Fan Low"'
+    - service: mqtt.publish
+      data:
+        topic: 'hasp/kitchen/command/p[3].b[7].font'
+        payload: '2'
+    - service: mqtt.publish
+      data:
+        topic: 'hasp/kitchen/command/p[3].b[7].txt'
+        payload: '"Light"'
+
+  # Toggle Fan High when p[3].b[4] pressed
+  - alias: hasp_kitchen_p3_ToggleLight1
+    trigger:
+    - platform: mqtt
+      topic: 'hasp/kitchen/state/p[3].b[4]'
+      payload: 'ON'
+    action:
+    - service: switch.turn_on
+      entity_id: switch.living_room_fan_high
+      
+  # Toggle Fan Med when p[3].b[5] pressed
+  - alias: hasp_kitchen_p3_ToggleLight2
+    trigger:
+    - platform: mqtt
+      topic: 'hasp/kitchen/state/p[3].b[5]'
+      payload: 'ON'
+    action:
+    - service: switch.turn_on
+      entity_id: switch.living_room_fan_med
+
+  # Toggle light3 when p[3].b[6] pressed
+  - alias: hasp_kitchen_p3_ToggleLight3
+    trigger:
+    - platform: mqtt
+      topic: 'hasp/kitchen/state/p[3].b[6]'
+      payload: 'ON'
+    action:
+    - service: switch.turn_on
+      entity_id: switch.living_room_fan_low
+
+  # Toggle all light_toggle_group when p[3].b[7] pressed
+  - alias: hasp_kitchen_p3_ToggleAll
+    trigger:
+    - platform: mqtt
+      topic: 'hasp/kitchen/state/p[3].b[7]'
+      payload: 'ON'
+    action:
+    - service: homeassistant.toggle
+      entity_id: switch.living_room_light
+      
+  # Toggle colors on p[3].b[4] when light1 changes
+  - alias: hasp_kitchen_p3_ToggleColor1
+    trigger:
+    - platform: state
+      entity_id: light.light_1
+    - platform: state
+      entity_id: 'binary_sensor.kitchen_connected'
+      to: 'on'
+    - platform: homeassistant
+      event: start
+    - platform: state
+      entity_id: input_number.hasp_kitchen_selectedbackgroundcolor
+    - platform: state
+      entity_id: input_number.hasp_kitchen_unselectedbackgroundcolor
+    - platform: state
+      entity_id: input_number.hasp_kitchen_selectedforegroundcolor
+    - platform: state
+      entity_id: input_number.hasp_kitchen_unselectedforegroundcolor
+    action:
+    - service: mqtt.publish
+      data:
+        topic: 'hasp/kitchen/command/p[3].b[4].bco'
+        payload_template: >-
+          {% if states.light.light_1.state == "on" -%}
+            {{ states.input_number.hasp_kitchen_selectedbackgroundcolor.state | int }}
+          {%- else -%}
+            {{ states.input_number.hasp_kitchen_unselectedbackgroundcolor.state | int }}
+          {%- endif %}
+    - service: mqtt.publish
+      data_template:
+        topic: 'hasp/kitchen/command/p[3].b[4].pco'
+        payload_template: >-
+          {% if states.light.light_1.state == "on" -%}
+            {{ states.input_number.hasp_kitchen_selectedforegroundcolor.state | int }}
+          {%- else -%}
+            {{ states.input_number.hasp_kitchen_unselectedforegroundcolor.state | int }}
+          {%- endif %}
+
+  # Toggle colors on p[3].b[5] when light1 changes
+  - alias: hasp_kitchen_p3_ToggleColor2
+    trigger:
+    - platform: state
+      entity_id: light.light_2
+    - platform: state
+      entity_id: 'binary_sensor.kitchen_connected'
+      to: 'on'
+    - platform: homeassistant
+      event: start
+    - platform: state
+      entity_id: input_number.hasp_kitchen_selectedbackgroundcolor
+    - platform: state
+      entity_id: input_number.hasp_kitchen_unselectedbackgroundcolor
+    - platform: state
+      entity_id: input_number.hasp_kitchen_selectedforegroundcolor
+    - platform: state
+      entity_id: input_number.hasp_kitchen_unselectedforegroundcolor
+    action:
+    - service: mqtt.publish
+      data:
+        topic: 'hasp/kitchen/command/p[3].b[5].bco'
+        payload_template: >-
+          {% if states.light.light_2.state == "on" -%}
+            {{ states.input_number.hasp_kitchen_selectedbackgroundcolor.state | int }}
+          {%- else -%}
+            {{ states.input_number.hasp_kitchen_unselectedbackgroundcolor.state | int }}
+          {%- endif %}
+    - service: mqtt.publish
+      data_template:
+        topic: 'hasp/kitchen/command/p[3].b[5].pco'
+        payload_template: >-
+          {% if states.light.light_2.state == "on" -%}
+            {{ states.input_number.hasp_kitchen_selectedforegroundcolor.state | int }}
+          {%- else -%}
+            {{ states.input_number.hasp_kitchen_unselectedforegroundcolor.state | int }}
+          {%- endif %}
+
+  # Toggle colors on p[3].b[6] when light1 changes
+  - alias: hasp_kitchen_p3_ToggleColor3
+    trigger:
+    - platform: state
+      entity_id: light.light_3
+    - platform: state
+      entity_id: 'binary_sensor.kitchen_connected'
+      to: 'on'
+    - platform: homeassistant
+      event: start
+    - platform: state
+      entity_id: input_number.hasp_kitchen_selectedbackgroundcolor
+    - platform: state
+      entity_id: input_number.hasp_kitchen_unselectedbackgroundcolor
+    - platform: state
+      entity_id: input_number.hasp_kitchen_selectedforegroundcolor
+    - platform: state
+      entity_id: input_number.hasp_kitchen_unselectedforegroundcolor
+    action:
+    - service: mqtt.publish
+      data:
+        topic: 'hasp/kitchen/command/p[3].b[6].bco'
+        payload_template: >-
+          {% if states.light.light_3.state == "on" -%}
+            {{ states.input_number.hasp_kitchen_selectedbackgroundcolor.state | int }}
+          {%- else -%}
+            {{ states.input_number.hasp_kitchen_unselectedbackgroundcolor.state | int }}
+          {%- endif %}
+    - service: mqtt.publish
+      data_template:
+        topic: 'hasp/kitchen/command/p[3].b[6].pco'
+        payload_template: >-
+          {% if states.light.light_3.state == "on" -%}
+            {{ states.input_number.hasp_kitchen_selectedforegroundcolor.state | int }}
+          {%- else -%}
+            {{ states.input_number.hasp_kitchen_unselectedforegroundcolor.state | int }}
+          {%- endif %}
+
+  # Set button 4 to "All Off" if any lights are on, otherwise set to "All On"
+  - alias: hasp_kitchen_p3_ToggleColorAll
+    trigger:
+    - platform: state
+      entity_id: group.light_toggle_group
+    - platform: state
+      entity_id: 'binary_sensor.kitchen_connected'
+      to: 'on'
+    - platform: homeassistant
+      event: start
+    - platform: state
+      entity_id: input_number.hasp_kitchen_selectedbackgroundcolor
+    - platform: state
+      entity_id: input_number.hasp_kitchen_unselectedbackgroundcolor
+    - platform: state
+      entity_id: input_number.hasp_kitchen_selectedforegroundcolor
+    - platform: state
+      entity_id: input_number.hasp_kitchen_unselectedforegroundcolor
+    action:
+    - service: mqtt.publish
+      data:
+        topic: 'hasp/kitchen/command/p[3].b[7].bco'
+        payload_template: >-
+          {% if states.group.light_toggle_group.state == "on" -%}
+            {{ states.input_number.hasp_kitchen_unselectedbackgroundcolor.state | int }}
+          {%- else -%}
+            {{ states.input_number.hasp_kitchen_selectedbackgroundcolor.state | int }}
+          {%- endif %}
+    - service: mqtt.publish
+      data_template:
+        topic: 'hasp/kitchen/command/p[3].b[7].pco'
+        payload_template: >-
+          {% if states.group.light_toggle_group.state == "on" -%}
+            {{ states.input_number.hasp_kitchen_unselectedforegroundcolor.state | int }}
+          {%- else -%}
+            {{ states.input_number.hasp_kitchen_selectedforegroundcolor.state | int }}
+          {%- endif %}
+    - service: mqtt.publish
+      data_template:
+        topic: 'hasp/kitchen/command/p[3].b[7].txt'
+        payload_template: >-
+          {% if states.group.light_toggle_group.state == "on" -%}
+           "Lights Off"
+          {%- else -%}
+           "Lights On"
+          {%- endif %}
